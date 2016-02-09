@@ -5,7 +5,13 @@
 	<ul class="entry_titles">
 		{% for entry in entries %}
 			<li><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a>
-			<p> {{entry.text}}
+			<p> {%if entry.text|length >80 %}
+					
+					{{entry.text[0:80]+"..."}}
+				{%else%}
+					{{entry.text}}
+					
+				{%endif%}
 		{% endfor %}
 	</ul>
 </div>

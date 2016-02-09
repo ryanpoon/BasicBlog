@@ -5,6 +5,7 @@
 type="image/png" 
 href="{{url_for('static', filename='favicon.ico')}}">
 <div class='page'>
+<a href="/"><button class="button">Home</button></a>
 {%if request.path == "/login"%}
 
 {%elif session['logged_in'] == True%}

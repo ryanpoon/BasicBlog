@@ -7,6 +7,8 @@
 			<dd><input type=text name=title>
 			<dt> Text:
 			<dd><textarea name=text rows=5 cols=40></textarea>
+      		<dt> Image(optional):
+      		<dd><input type=file name=file>
 			<dd><input type=submit value=Share>
 		</dl>
 	</form>
@@ -14,7 +16,13 @@
 	<ul class="entry_titles">
 		{% for entry in entries %}
 			<li><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a>
-			<p> {{entry.text}}
+			<p> {%if len(entry.text) >80%}
+					
+					{{entry.text[0:80]+"..."}}
+				{%else%}
+					{{entry.text}}
+					
+				{%endif%}
 		{% endfor %}
 	</ul>
 </div>

@@ -4,12 +4,16 @@ from contextlib import closing
 
 #config
 DATABASE = 'entries.db'
+UPLOAD_FOLDER = './img'
 DEBUG = True
 SECRET_KEY = 'dev key'
 USERNAME = 'ryan'
 PASSWORD = 'password'
 
+
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
@@ -22,6 +26,12 @@ def init_db():
 		with app.open_resource('schema.db', mode='r') as f:
 			db.cursor().executescript(f.read())
 		db.commit()
+		
+		
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.before_request
 def before_request():
@@ -52,7 +62,14 @@ def home():
 @app.route('/add', methods=['POST'])
 def add_entry():
 	print request
-	g.db.execute('insert into entries (title,text) values (?,?)',[request.form['title'],request.form['text']])
+	file = request.files['file']
+	
+	filename = ""
+	if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+	g.db.execute('insert into entries (title,text,img_name) values (?,?,?)',[request.form['title'],request.form['text'],filename])
 	g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
