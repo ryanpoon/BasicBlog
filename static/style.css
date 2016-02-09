@@ -1,0 +1,53 @@
+body {
+	background-color: #A4A4DB;
+	font-family:"Trebuchet MS", Helvetica, sans-serif;	
+
+}
+
+.button {
+	background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.entry_titles {
+	list-style: none;
+
+}
+
+.entries {
+	background-color: #F2CB57;
+	margin-right: 40%;
+}
+
+.center{
+	position: relative;
+	  height: 200px;
+  width: 70%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.login_info{
+	font-size:40px;
+	transform: translate(-50%, -50%);
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    padding: 20px;
+}
+
+dd input{
+	width: 300px;
+	height: 40px;
+	font-size: 40px;
+	font-family: "Courier New", Courier, monospace;	
+
+}

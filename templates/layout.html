@@ -1,0 +1,15 @@
+<!doctype html>
+<link rel=stylesheet type=text/css href="{{url_for('static', filename='style.css')}}">
+<title>Basic Blog</title>
+<div class='page'>
+{%if request.path == "/login"%}
+
+{%elif session['logged_in'] == True%}
+	<a href="/log_out"><button class="button">Log Out</button></a>
+{%else%}
+	<a href="/login"><button class="button">Log In</button></a>
+{%endif%}
+
+	{% block body %}{% endblock %}
+
+</div>

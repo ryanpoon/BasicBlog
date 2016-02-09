@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+
+	<form action="{{url_for('add_entry')}}" method=post class=add-entry>
+		<dl>
+			<dt> Title:
+			<dd><input type=text name=title>
+			<dt> Text:
+			<dd><textarea name=text rows=5 cols=40></textarea>
+			<dd><input type=submit value=Share>
+		</dl>
+	</form>
+<div class="entries">
+	<ul class="entry_titles">
+		{% for entry in entries %}
+			<li><h2> {{entry.title}} </h2>
+			<p> {{entry.text}}
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}

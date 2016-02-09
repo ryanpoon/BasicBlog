@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="entries">
+	<h1>Entries</h1>
+	<ul class="entry_titles">
+		{% for entry in entries %}
+			<li><h2> {{entry.title}} </h2>
+			<p> {{entry.text}}
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}
