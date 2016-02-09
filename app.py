@@ -39,14 +39,14 @@ def show_entries():
 		print 'Logged in :)', session['logged_in']
 	else:
 		return redirect(url_for('login'))
-	cur = g.db.execute('select title,text from entries order by id desc')
-	entries = [dict(title=row[0],text=row[1]) for row in cur.fetchall()]
+	cur = g.db.execute('select title,text,id from entries order by id desc')
+	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
 	return render_template('entires.html', entries=entries)
 
 @app.route('/')
 def home():
-	cur = g.db.execute('select title,text from entries order by id desc')
-	entries = [dict(title=row[0],text=row[1]) for row in cur.fetchall()]
+	cur = g.db.execute('select title,text,id from entries order by id desc')
+	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
 	return render_template('home.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
@@ -69,6 +69,15 @@ def login_info():
 		session['logged_in'] = False
 	return redirect(url_for('show_entries'))	
 	
+	
+@app.route('/entry/<id>')
+def show_entry(id):
+	cur = g.db.execute('select title,text from entries where id == ?', [id])
+	entries = [dict(title=row[0],text=row[1]) for row in cur.fetchall()]
+	print entries
+	return render_template('entry.html', entry=entries[0])
+	
+		
 @app.route('/log_out')
 def log_out():
 	session['logged_in'] = False

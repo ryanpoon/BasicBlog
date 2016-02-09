@@ -13,7 +13,7 @@
 <div class="entries">
 	<ul class="entry_titles">
 		{% for entry in entries %}
-			<li><h2> {{entry.title}} </h2>
+			<li><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a>
 			<p> {{entry.text}}
 		{% endfor %}
 	</ul>
