@@ -54,6 +54,17 @@ body {
 	height: 100%;
 	width; auto;
 }
+
+li a h2{
+	float: left;
+	clear: left;
+	margin: 0px;
+}
+
+li p {
+display:block
+
+}
 .center{
 	position: relative;
 	  height: 200px;

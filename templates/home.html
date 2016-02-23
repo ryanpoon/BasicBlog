@@ -4,14 +4,17 @@
 	<h1>Entries</h1>
 	<ul class="entry_titles">
 		{% for entry in entries %}
-			<li><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a>
-			<p> {%if entry.text|length >80 %}
+			<li> <span><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a> </span>
+			<br />
+
+			<div><p> {%if entry.text|length >80 %}
 					
 					{{entry.text[0:80]+"..."}}
 				{%else%}
 					{{entry.text}}
 					
 				{%endif%}
+			</p></div>
 		{% endfor %}
 	</ul>
 </div>
