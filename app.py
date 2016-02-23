@@ -1,6 +1,10 @@
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
+
 from contextlib import closing
+from werkzeug import secure_filename
+import os
+from PIL import Image
 
 #config
 DATABASE = 'entries.db'
@@ -28,7 +32,7 @@ def init_db():
 		db.commit()
 		
 		
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','PNG', 'JPG','JPEG','GIF'])
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -89,11 +93,19 @@ def login_info():
 	
 @app.route('/entry/<id>')
 def show_entry(id):
-	cur = g.db.execute('select title,text from entries where id == ?', [id])
-	entries = [dict(title=row[0],text=row[1]) for row in cur.fetchall()]
+	cur = g.db.execute('select title,text,img_name from entries where id == ?', [id])
+	
+	entries = [dict(title=row[0],text=row[1],img_name=row[2]) for row in cur.fetchall()]
+	if entries[0]['img_name'] != "":
+		im = Image.open('img/'+entries[0]['img_name'])
+		entries[0]['img_size'] = im.size
 	print entries
 	return render_template('entry.html', entry=entries[0])
 	
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
 		
 @app.route('/log_out')
 def log_out():

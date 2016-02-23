@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
 
-	<form action="{{url_for('add_entry')}}" method=post class=add-entry>
+	<form action="{{url_for('add_entry')}}" method=post class=add-entry enctype="multipart/form-data">
 		<dl>
 			<dt> Title:
-			<dd><input type=text name=title>
+			<dd><input type=text name=title class="title">
 			<dt> Text:
 			<dd><textarea name=text rows=5 cols=40></textarea>
       		<dt> Image(optional):
@@ -16,7 +16,7 @@
 	<ul class="entry_titles">
 		{% for entry in entries %}
 			<li><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a>
-			<p> {%if len(entry.text) >80%}
+			<p> {%if entry.text|length >80 %}
 					
 					{{entry.text[0:80]+"..."}}
 				{%else%}

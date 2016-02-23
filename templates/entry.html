@@ -4,9 +4,16 @@
 
 <div class="page_entry">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg/220px-Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg"/>
+{%if entry.img_name != ""%}
+	{%if entry.img_size[0] > 500 and entry.img_size[1] > 700 %}
+		<img src="/uploads/{{entry.img_name}}" class="imgw imgh" >
+	{%elif entry.img_size[0] > 500%}	
+		<img src="/uploads/{{entry.img_name}}" class="imgw " >
+	{%else%}
+		<img src="/uploads/{{entry.img_name}}" class="imgh " >
+	{%endif%}
+{%endif%}
 
-	
 	<p> {{entry.text}}
 
 </div>

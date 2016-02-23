@@ -46,6 +46,14 @@ body {
 .page_entry p{
 	margin-top: 0px;
 }
+.imgw{
+	width: 100%;
+	height:auto;
+}
+.imgh{
+	height: 100%;
+	width; auto;
+}
 .center{
 	position: relative;
 	  height: 200px;
@@ -63,7 +71,7 @@ body {
     padding: 20px;
 }
 
-dd input{
+.title{
 	width: 300px;
 	height: 40px;
 	font-size: 40px;
