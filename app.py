@@ -77,6 +77,12 @@ def add_entry():
 	g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
+	
+@app.route('/delete', methods=['POST'])
+def del_entry():
+	g.db.execute('delete from entries where id=(?)', (request.form['id'], ))
+ 	g.db.commit()
+ 	return redirect(url_for('show_entries'))
 
 @app.route ('/login')
 def login():

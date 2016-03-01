@@ -17,6 +17,23 @@ body {
     cursor: pointer;
 }
 
+.delete{
+	border: none;
+	color: grey;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 5px;
+	cursor: pointer;
+	background-color: #F2CB57;
+	
+	float: right;
+	margin-right:100px;
+}
+
+.delete:hover{
+	color:red;
+}
+
 .entry_titles {
 	list-style: none;
 
@@ -25,6 +42,9 @@ body {
 .entries {
 	background-color: #F2CB57;
 	margin-right: 40%;
+}
+.test {
+	width: 50%;
 }
 .page_entry{
 	background-color: #0FFAB7;

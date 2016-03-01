@@ -15,7 +15,11 @@
 <div class="entries">
 	<ul class="entry_titles">
 		{% for entry in entries %}
-			<li> <span><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a> </span>
+			<li> <div><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a></div>
+			<form action="{{url_for('del_entry')}}" method=post id="delete" >
+				<input name=id value={{entry.id}} type="hidden" >
+			  <input type="button" class="delete" onclick="confirm_delete()" value=X>
+			</form> 
 			<br />
 			<div><p> {%if entry.text|length >80 %}
 					
