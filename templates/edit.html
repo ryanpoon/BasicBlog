@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+
+	<form action="{{url_for('edit_entry')}}" method=post class=add-entry enctype="multipart/form-data">
+		<dl>
+		
+		<input name=id type=hidden value="{{entry.id}}">
+			<dt> Title:
+			<dd><input type=text name=title class="title" value="{{entry.title}}">
+			<dt> Text:
+			<dd><textarea name=text rows=100 cols=80>{{entry.text}}</textarea>
+      		<dt> Image(optional):
+      		<dd><input type=file name=file value="{{entry.img_name}}">
+			<dd><input type=submit value=Save>
+		</dl>
+	</form>
+	
+{% endblock %}

@@ -70,11 +70,29 @@ def add_entry():
 	
 	filename = ""
 	if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
+        	filename = secure_filename(file.filename)
+        	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 	g.db.execute('insert into entries (title,text,img_name) values (?,?,?)',[request.form['title'],request.form['text'],filename])
+
 	g.db.commit()
+	flash('New entry was successfully posted')
+	return redirect(url_for('show_entries'))
+	
+@app.route('/edit', methods=['POST'])
+def edit_entry():
+	print 'edit', [request.form['title'],request.form['text'],request.form['id']]
+	print request
+	file = request.files['file']
+	
+	filename = ""
+	if file and allowed_file(file.filename):
+        	filename = secure_filename(file.filename)
+        	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		g.db.execute('update entries set title=? ,text=? , img_name=? where id=?',[request.form['title'],request.form['text'],filename,request.form['id']])
+		g.db.commit()
+	else:
+		g.db.execute('update entries set title=? , text=?  where id=?',[request.form['title'],request.form['text'],request.form['id']])
+		g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
 	
@@ -107,6 +125,21 @@ def show_entry(id):
 		entries[0]['img_size'] = im.size
 	print entries
 	return render_template('entry.html', entry=entries[0])
+	
+	
+@app.route('/edit/<id>')
+def edit(id):
+	if session['logged_in'] == False:
+		return redirect(url_for('home'))		
+
+	cur = g.db.execute('select title,text,id from entries order by id desc')
+	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
+# 	if entries[0]['img_name'] != "":
+# 		im = Image.open('img/'+entries[0]['img_name'])
+# 		entries[0]['img_size'] = im.size
+	print entries
+	return render_template('edit.html', entry=entries[0])
+	
 	
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

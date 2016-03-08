@@ -16,12 +16,14 @@
 	<ul class="entry_titles">
 		{% for entry in entries %}
 			<li> <div><a href="entry/{{entry.id}}"><h2> {{entry.title}} </h2></a></div>
-			<form action="{{url_for('del_entry')}}" method=post id="delete" >
+			<a href="edit/{{entry.id}}" class="pencil_img">  </a>
+			<form action="{{url_for('del_entry')}}" method=post id="delete{{entry.id}}" >
 				<input name=id value={{entry.id}} type="hidden" >
-			  <input type="button" class="delete" onclick="confirm_delete()" value=X>
-			</form> 
+			  <input type="button" class="delete" onclick="confirm_delete({{entry.id}})" value=X>
+			</form>
+			
 			<br />
-			<div><p> {%if entry.text|length >80 %}
+			<div><p > {%if entry.text|length >80 %}
 					
 					{{entry.text[0:80]+"..."}}
 				{%else%}
