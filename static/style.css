@@ -46,7 +46,7 @@ body {
 	background:transparent url('pencil.png') center no-repeat;
 }
 .pencil_img:hover{
-	background-image: url('pencil_test.png') center top;
+	background: url('pencil_test.png') center no-repeat;
 }
 .entry_titles {
 	list-style: none;
