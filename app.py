@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3 , datetime
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
 
 from contextlib import closing
@@ -72,7 +72,7 @@ def add_entry():
 	if file and allowed_file(file.filename):
         	filename = secure_filename(file.filename)
         	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	g.db.execute('insert into entries (title,text,img_name) values (?,?,?)',[request.form['title'],request.form['text'],filename])
+	g.db.execute('insert into entries (title,text,img_name,date) values (?,?,?,?)',[request.form['title'],request.form['text'],filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p')])
 
 	g.db.commit()
 	flash('New entry was successfully posted')
@@ -88,10 +88,10 @@ def edit_entry():
 	if file and allowed_file(file.filename):
         	filename = secure_filename(file.filename)
         	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		g.db.execute('update entries set title=? ,text=? , img_name=? where id=?',[request.form['title'],request.form['text'],filename,request.form['id']])
+		g.db.execute('update entries set title=? ,text=? , date = ?, img_name=? where id=?',[request.form['title'],request.form['text'],datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), filename,request.form['id']])
 		g.db.commit()
 	else:
-		g.db.execute('update entries set title=? , text=?  where id=?',[request.form['title'],request.form['text'],request.form['id']])
+		g.db.execute('update entries set title=? , text=?, date=?  where id=?',[request.form['title'],request.form['text'], datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'),request.form['id']])
 		g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
@@ -117,9 +117,9 @@ def login_info():
 	
 @app.route('/entry/<id>')
 def show_entry(id):
-	cur = g.db.execute('select title,text,img_name from entries where id == ?', [id])
+	cur = g.db.execute('select title,text,img_name, date from entries where id == ?', [id])
 	
-	entries = [dict(title=row[0],text=row[1],img_name=row[2]) for row in cur.fetchall()]
+	entries = [dict(title=row[0],text=row[1],img_name=row[2], date=row[3]) for row in cur.fetchall()]
 	if entries[0]['img_name'] != "":
 		im = Image.open('img/'+entries[0]['img_name'])
 		entries[0]['img_size'] = im.size
@@ -132,8 +132,8 @@ def edit(id):
 	if session['logged_in'] == False:
 		return redirect(url_for('home'))		
 
-	cur = g.db.execute('select title,text,id from entries where id == ?', [id])
-	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
+	cur = g.db.execute('select title,text,id,date from entries where id == ?', [id])
+	entries = [dict(title=row[0],text=row[1], id=row[2], date=row[3]) for row in cur.fetchall()]
 # 	if entries[0]['img_name'] != "":
 # 		im = Image.open('img/'+entries[0]['img_name'])
 # 		entries[0]['img_size'] = im.size
