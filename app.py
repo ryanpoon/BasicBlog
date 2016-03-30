@@ -132,7 +132,7 @@ def edit(id):
 	if session['logged_in'] == False:
 		return redirect(url_for('home'))		
 
-	cur = g.db.execute('select title,text,id from entries order by id desc')
+	cur = g.db.execute('select title,text,id from entries where id == ?', [id])
 	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
 # 	if entries[0]['img_name'] != "":
 # 		im = Image.open('img/'+entries[0]['img_name'])
