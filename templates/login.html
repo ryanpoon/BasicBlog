@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
-
+{%if username==False%}
+	<p id="error">ERROR: Your username doesn't match any in our database</p>
+{%endif%}
 <div class="center">
 	<form action="{{url_for('login_info')}}" method=post class=login_info>
 		<dl>
@@ -11,5 +13,7 @@
 			<dd><input type=submit value=Login class="button">
 		</dl>
 	</form>
+	
 </div>
+
 {% endblock %}

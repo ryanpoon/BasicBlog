@@ -1,4 +1,4 @@
-import sqlite3 , datetime
+import sqlite3 , datetime, random
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
 
 from contextlib import closing
@@ -62,6 +62,29 @@ def home():
 	cur = g.db.execute('select title,text,id from entries order by id desc')
 	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
 	return render_template('home.html', entries=entries)
+	
+@app.route('/create-account')
+def account_new():
+	return render_template('newaccount.html')	
+
+@app.route('/create-account', methods=['POST'])
+def create_account():
+	print request
+	file = request.files['file']
+	if request.form['password'] != request.form['confirmpassword']:
+		return render_template('newaccount.html', confirm = False)
+	filename = ""
+	if file and allowed_file(file.filename):
+		filename = secure_filename(file.filename)
+		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+	salt = str(random.randint(0,100000))
+	password = hash(request.form['password']+salt)
+	g.db.execute('insert into users (username,password, profilepic_name,date,salt) values (?,?,?,?,?)',
+	[request.form['username'],password,filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), salt])
+	
+	g.db.commit()
+	flash('New entry was successfully posted')
+	return redirect(url_for('show_entries'))
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -108,7 +131,13 @@ def login():
  	
 @app.route('/login_info', methods=['POST'])
 def login_info():
-	if USERNAME == request.form['username'] and	PASSWORD == request.form['password']:
+	user = g.db.execute('select username,password,salt from users where username == ?', [request.form['username']])
+	user = [dict(username=row[0],password=row[1],salt=row[2]) for row in user.fetchall()]
+	if user == []:
+		return render_template('login.html', username=False)
+	
+	print user[0]['password'] 
+	if user[0]['password'] == hash(request.form['password']+user[0]['salt']):
 		session['logged_in'] = True
 	else:
 		session['logged_in'] = False

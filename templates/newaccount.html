@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+{%if confirm == False%}
+	<p id = "error">ERROR: Your confirmed password didn't match</p>
+{%endif%}
+	<form action="{{url_for('create_account')}}" method=post class=add-entry enctype="multipart/form-data">
+		<dl>
+			<dt> Username:
+			<dd><input type=text name=username>
+			<dt> Password:
+			<dd><input type=password name=password></input>
+			<dt> Confirm Password:
+			<dd><input type=password name=confirmpassword></input>
+      		<dt> Profile Picture(optional):
+      		<dd><input type=file name=file>
+			<dd><input type=submit value=Create>
+		</dl>
+	</form>
+
+{% endblock %}

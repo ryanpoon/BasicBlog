@@ -33,7 +33,9 @@ body {
 	float: right;
 	margin-right:30px;
 }
-
+#error{
+	color:red;
+}
 .delete:hover{
 	color:red;
 }
