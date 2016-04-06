@@ -59,8 +59,8 @@ def show_entries():
 
 @app.route('/')
 def home():
-	cur = g.db.execute('select title,text,id from entries order by id desc')
-	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
+	cur = g.db.execute('select title,text,id,creator from entries order by id desc')
+	entries = [dict(title=row[0],text=row[1], id=row[2], creator=row[3]) for row in cur.fetchall()]
 	return render_template('home.html', entries=entries)
 	
 @app.route('/create-account')
@@ -95,7 +95,7 @@ def add_entry():
 	if file and allowed_file(file.filename):
         	filename = secure_filename(file.filename)
         	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	g.db.execute('insert into entries (title,text,img_name,date) values (?,?,?,?)',[request.form['title'],request.form['text'],filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p')])
+	g.db.execute('insert into entries (title,text,img_name,date, creator) values (?,?,?,?,?)',[request.form['title'],request.form['text'],filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 
 	g.db.commit()
 	flash('New entry was successfully posted')
@@ -139,16 +139,18 @@ def login_info():
 	print user[0]['password'] 
 	if user[0]['password'] == hash(request.form['password']+user[0]['salt']):
 		session['logged_in'] = True
+		session['username'] = user[0]['username']
 	else:
 		session['logged_in'] = False
+	
 	return redirect(url_for('show_entries'))	
 	
 	
 @app.route('/entry/<id>')
 def show_entry(id):
-	cur = g.db.execute('select title,text,img_name, date from entries where id == ?', [id])
+	cur = g.db.execute('select title,text,img_name, date, creator from entries where id == ?', [id])
 	
-	entries = [dict(title=row[0],text=row[1],img_name=row[2], date=row[3]) for row in cur.fetchall()]
+	entries = [dict(title=row[0],text=row[1],img_name=row[2], date=row[3], creator=row[4]) for row in cur.fetchall()]
 	if entries[0]['img_name'] != "":
 		im = Image.open('img/'+entries[0]['img_name'])
 		entries[0]['img_size'] = im.size

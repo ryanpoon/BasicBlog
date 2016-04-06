@@ -21,6 +21,9 @@ body {
 	margin-right: 10px;
 	cursor:pointer;
 }
+.nodecor{
+	text-decoration: none;
+}
 .delete{
 	border: none;
 	color: grey;
