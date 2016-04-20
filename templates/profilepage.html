@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block body %}
+<div id="profile">
+	<div id="profile-tabs">
+		<button class='profile-buttons'>Profile</button>
+		<button class='profile-buttons'>Feed</button>
+		<button class='profile-buttons'>Followers</button>
+		<button class='profile-buttons'>Following</button>
+	</div>
+	<div id="profile-content">
+		<p id='username'>{{user.username}}</p>
+		{%if user.profilepic_name != ''%}
+			<img src="/uploads/{{user.profilepic_name}}" onclick="revealprofpic()" class=cursor height=100px width=auto>
+		{%else%}
+			<img src ="{{url_for('static', filename='default.jpeg')}}" onclick="revealprofpic()" class=cursor>
+		{%endif%}
+		
+		
+		<form action="{{url_for('change_profpic')}}" method=post class=changeprofpic enctype="multipart/form-data">
+		<dl>
+			<dd><input type = hidden name = id value={{user.id}}>
+      		<dt>Change Profile Picture:
+      		<dd><input type=file name=file>
+			<dd><input type=submit value=Upload>
+		</dl>
+	</form>
+		<p>
+		</p>
+		<div>
+		Profile Created {{user.date}}
+		<br>
+		Last Active {{user.last_active}}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

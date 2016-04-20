@@ -12,6 +12,7 @@ href="{{url_for('static', filename='favicon.ico')}}">
 {%elif session['logged_in'] == True%}
 	<a href="/log_out"><button class="button">Log Out</button></a>
 	<a href="/entries"><button class="button">Write</button></a>
+	<a href="/myprofile"><button class = "button">Profile</button></a>
 {%else%}
 	<a href="/login"><button class="button">Log In</button></a>
 	<a href="/create-account" ><button class="button" >Create Account</button></a>

@@ -1,5 +1,5 @@
 body {
-	background-color: #A4A4DB;
+	background-color: 'white';
 	font-family:"Trebuchet MS", Helvetica, sans-serif;	
 
 }
@@ -23,6 +23,42 @@ body {
 }
 .nodecor{
 	text-decoration: none;
+}
+#username{
+	font-family:"Kozuka Gothic Pro", sans-serif;
+	font-size: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.changeprofpic {
+	display:none;
+}
+.cursor{
+	cursor:pointer;
+}
+#profile{
+	width: 60%;
+	background-color: #E04343;
+	padding-left: 10px;
+	padding-bottom: 10px;
+}
+.profile-buttons{
+	background-color: #FFC14F;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0px 2px;
+    cursor: pointer;
+}
+#profile-tabs{
+	float:top;
+	background-color: #9CEDFF; 
+	width: 56%;
+	padding-left: 5px;
 }
 .delete{
 	border: none;

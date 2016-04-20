@@ -4,3 +4,7 @@ function confirm_delete(id){
 		document.getElementById("delete"+id).submit();
 	}
 }
+function revealprofpic(){
+	var x = document.getElementsByClassName("changeprofpic");
+    x[0].style.display = "block";
+}

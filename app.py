@@ -15,7 +15,7 @@ USERNAME = 'ryan'
 PASSWORD = 'password'
 
 
-
+#setup
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config.from_object(__name__)
@@ -47,6 +47,9 @@ def teardown_request(exception):
 	if db is not None:
 		db.close()
 
+
+
+#entries
 @app.route('/entries')
 def show_entries():
 	if session.get('logged_in') and session['logged_in']==True:
@@ -56,13 +59,13 @@ def show_entries():
 	cur = g.db.execute('select title,text,id from entries order by id desc')
 	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
 	return render_template('entires.html', entries=entries)
-
+#home
 @app.route('/')
 def home():
 	cur = g.db.execute('select title,text,id,creator from entries order by id desc')
 	entries = [dict(title=row[0],text=row[1], id=row[2], creator=row[3]) for row in cur.fetchall()]
 	return render_template('home.html', entries=entries)
-	
+#createaccount
 @app.route('/create-account')
 def account_new():
 	return render_template('newaccount.html')	
@@ -86,6 +89,17 @@ def create_account():
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
 
+#profile
+@app.route('/myprofile')
+def myprofile():
+	user = g.db.execute('select username,profilepic_name,date,last_active,id from users where username == ?', [session['username']])
+	user = [dict(username=row[0],profilepic_name=row[1],date=row[2],last_active=row[3],id=row[4]) for row in user.fetchall()]
+	if session['logged_in'] == False:
+		return redirect(url_for('home'))	
+	return render_template('profilepage.html', user=user[0])
+
+
+#new entry
 @app.route('/add', methods=['POST'])
 def add_entry():
 	print request
@@ -100,7 +114,7 @@ def add_entry():
 	g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
-	
+#edit
 @app.route('/edit', methods=['POST'])
 def edit_entry():
 	print 'edit', [request.form['title'],request.form['text'],request.form['id']]
@@ -118,17 +132,32 @@ def edit_entry():
 		g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
-	
+#delete
 @app.route('/delete', methods=['POST'])
 def del_entry():
 	g.db.execute('delete from entries where id=(?)', (request.form['id'], ))
  	g.db.commit()
  	return redirect(url_for('show_entries'))
-
-@app.route ('/login')
+#login
+@app.route('/login')
 def login():
  	return render_template('login.html')
  	
+#change profile pic
+@app.route('/profpic', methods=['POST'])
+def change_profpic():
+	file = request.files['file']
+	
+	filename = ""
+	if file and allowed_file(file.filename):
+        	filename = secure_filename(file.filename)
+        	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		g.db.execute('update users set profilepic_name=? where id=?',[filename, request.form['id']])
+		g.db.commit()
+	flash('New entry was successfully posted')
+	return redirect(url_for('myprofile'))
+	
+#logging in
 @app.route('/login_info', methods=['POST'])
 def login_info():
 	user = g.db.execute('select username,password,salt from users where username == ?', [request.form['username']])
@@ -145,7 +174,7 @@ def login_info():
 	
 	return redirect(url_for('show_entries'))	
 	
-	
+#going to specific entry	
 @app.route('/entry/<id>')
 def show_entry(id):
 	cur = g.db.execute('select title,text,img_name, date, creator from entries where id == ?', [id])
@@ -157,7 +186,7 @@ def show_entry(id):
 	print entries
 	return render_template('entry.html', entry=entries[0])
 	
-	
+#editing a specific entry
 @app.route('/edit/<id>')
 def edit(id):
 	if session['logged_in'] == False:
@@ -171,12 +200,12 @@ def edit(id):
 	print entries
 	return render_template('edit.html', entry=entries[0])
 	
-	
+#uploading file	
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
-		
+#logs out
 @app.route('/log_out')
 def log_out():
 	session['logged_in'] = False
