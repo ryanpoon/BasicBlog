@@ -17,15 +17,27 @@
 		
 		
 		<form action="{{url_for('change_profpic')}}" method=post class=changeprofpic enctype="multipart/form-data">
-		<dl>
-			<dd><input type = hidden name = id value={{user.id}}>
-      		<dt>Change Profile Picture:
-      		<dd><input type=file name=file>
-			<dd><input type=submit value=Upload>
-		</dl>
-	</form>
-		<p>
+			<dl>
+				<dd><input type = hidden name = id value={{user.id}}>
+				<dt>Change Profile Picture:
+				<dd><input type=file name=file>
+				<dd><input type=submit value=Upload>
+			</dl>
+		</form>
+	
+	
+		<p id=profiledesc onclick='changeprofdesc()' style="white-space: pre-line">
+		{{user.description}} 
 		</p>
+		<form action="{{url_for('changeprofdesc')}}" method=post class=changeprofdesc enctype="multipart/form-data">
+			<dl>
+				<input type = hidden name = id value={{user.id}}>
+				<textarea name=text cols=82 style="white-space: pre-line" id=desctext>{{user.description}}</textarea>
+				<br>
+				<input type=submit value=Update>
+			</dl>
+		</form>
+	
 		<div>
 		Profile Created {{user.date}}
 		<br>

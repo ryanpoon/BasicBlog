@@ -14,5 +14,6 @@ create table users (
 	salt text not null,
 	profilepic_name text,
 	date text not null,
-	last_active text
+	last_active text, 
+	description text
 );

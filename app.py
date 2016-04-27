@@ -56,7 +56,7 @@ def show_entries():
 		print 'Logged in :)', session['logged_in']
 	else:
 		return redirect(url_for('login'))
-	cur = g.db.execute('select title,text,id from entries order by id desc')
+	cur = g.db.execute('select title,text,id from entries where creator == ? order by id desc', [session['username']])
 	entries = [dict(title=row[0],text=row[1], id=row[2]) for row in cur.fetchall()]
 	return render_template('entires.html', entries=entries)
 #home
@@ -82,6 +82,7 @@ def create_account():
 		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 	salt = str(random.randint(0,100000))
 	password = hash(request.form['password']+salt)
+	g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 	g.db.execute('insert into users (username,password, profilepic_name,date,salt) values (?,?,?,?,?)',
 	[request.form['username'],password,filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), salt])
 	
@@ -92,10 +93,12 @@ def create_account():
 #profile
 @app.route('/myprofile')
 def myprofile():
-	user = g.db.execute('select username,profilepic_name,date,last_active,id from users where username == ?', [session['username']])
-	user = [dict(username=row[0],profilepic_name=row[1],date=row[2],last_active=row[3],id=row[4]) for row in user.fetchall()]
+	user = g.db.execute('select username,profilepic_name,date,last_active,id,description from users where username == ?', [session['username']])
+	user = [dict(username=row[0],profilepic_name=row[1],date=row[2],last_active=row[3],id=row[4],description=row[5]) for row in user.fetchall()]
 	if session['logged_in'] == False:
 		return redirect(url_for('home'))	
+	if user[0]['description'] == None:
+		user[0]['description'] = 'You haven\'t written a description yet! Go ahead and click here to start writing!'
 	return render_template('profilepage.html', user=user[0])
 
 
@@ -110,7 +113,7 @@ def add_entry():
         	filename = secure_filename(file.filename)
         	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 	g.db.execute('insert into entries (title,text,img_name,date, creator) values (?,?,?,?,?)',[request.form['title'],request.form['text'],filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
-
+	g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 	g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
@@ -125,10 +128,12 @@ def edit_entry():
 	if file and allowed_file(file.filename):
         	filename = secure_filename(file.filename)
         	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 		g.db.execute('update entries set title=? ,text=? , date = ?, img_name=? where id=?',[request.form['title'],request.form['text'],datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), filename,request.form['id']])
 		g.db.commit()
 	else:
 		g.db.execute('update entries set title=? , text=?, date=?  where id=?',[request.form['title'],request.form['text'], datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'),request.form['id']])
+		g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 		g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
@@ -136,6 +141,7 @@ def edit_entry():
 @app.route('/delete', methods=['POST'])
 def del_entry():
 	g.db.execute('delete from entries where id=(?)', (request.form['id'], ))
+	g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
  	g.db.commit()
  	return redirect(url_for('show_entries'))
 #login
@@ -153,10 +159,20 @@ def change_profpic():
         	filename = secure_filename(file.filename)
         	file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		g.db.execute('update users set profilepic_name=? where id=?',[filename, request.form['id']])
+		g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 		g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('myprofile'))
+#change profile description
+@app.route('/profdesc', methods=['POST'])
+def changeprofdesc():
+
 	
+	g.db.execute('update users set description=? where id=?',[request.form['text'], request.form['id']])
+	g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
+	g.db.commit()
+	flash('New entry was successfully posted')
+	return redirect(url_for('myprofile'))
 #logging in
 @app.route('/login_info', methods=['POST'])
 def login_info():
@@ -192,8 +208,11 @@ def edit(id):
 	if session['logged_in'] == False:
 		return redirect(url_for('home'))		
 
-	cur = g.db.execute('select title,text,id,date from entries where id == ?', [id])
-	entries = [dict(title=row[0],text=row[1], id=row[2], date=row[3]) for row in cur.fetchall()]
+	cur = g.db.execute('select title,text,id,date, creator from entries where id == ?', [id])
+	entries = [dict(title=row[0],text=row[1], id=row[2], date=row[3], creator=row[4]) for row in cur.fetchall()]
+
+	if entries[0]['creator'] != session['username']:
+		return redirect(url_for('home'))
 # 	if entries[0]['img_name'] != "":
 # 		im = Image.open('img/'+entries[0]['img_name'])
 # 		entries[0]['img_size'] = im.size
