@@ -82,9 +82,8 @@ def create_account():
 		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 	salt = str(random.randint(0,100000))
 	password = hash(request.form['password']+salt)
-	g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
-	g.db.execute('insert into users (username,password, profilepic_name,date,salt) values (?,?,?,?,?)',
-	[request.form['username'],password,filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), salt])
+	g.db.execute('insert into users (username,password, profilepic_name,date,salt, last_active) values (?,?,?,?,?,?)',
+	[request.form['username'],password,filename, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), salt, datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p')])
 	
 	g.db.commit()
 	flash('New entry was successfully posted')
