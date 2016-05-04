@@ -37,6 +37,17 @@ body {
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 16px;
 }
+.prof-change{
+	display: inline-block;
+	float:right;
+	border: none;
+	padding: 5px;
+	font-family:"Trebuchet MS", Helvetica, sans-serif;;
+}
+#changepswd{
+	margin-left: 20px; 
+	margin-right: 20px;
+}
 .changeprofdesc {
 	display:none;
 }

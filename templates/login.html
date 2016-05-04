@@ -3,6 +3,9 @@
 {%if username==False%}
 	<p id="error">ERROR: Your username doesn't match any in our database</p>
 {%endif%}
+{%if password==False%}
+	<p id="error">ERROR: Your password isn't correct for the username you chose</p>
+{%endif%}
 <div class="center">
 	<form action="{{url_for('login_info')}}" method=post class=login_info>
 		<dl>
@@ -10,6 +13,9 @@
 			<dd><input type=text name=username class="title">
 			<dt> Password:
 			<dd><input type=password name=password class="title">
+			{%if password==False%}
+				<a href='/forgotpassword'><button type=button>Forgot your password?</button></a>
+			{%endif%}
 			<dd><input type=submit value=Login class="button">
 		</dl>
 	</form>

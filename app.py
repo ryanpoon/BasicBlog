@@ -1,6 +1,6 @@
 import sqlite3 , datetime, random
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
-
+from validate_email import validate_email
 from contextlib import closing
 from werkzeug import secure_filename
 import os
@@ -11,9 +11,13 @@ DATABASE = 'entries.db'
 UPLOAD_FOLDER = './img'
 DEBUG = True
 SECRET_KEY = 'dev key'
-USERNAME = 'ryan'
-PASSWORD = 'password'
 
+with open('supersecretemail.txt', 'rb') as f:
+	USERNAME = f.readline()
+	PASSWORD = f.readline()
+
+print USERNAME
+print PASSWORD
 
 #setup
 app = Flask(__name__)
@@ -88,6 +92,51 @@ def create_account():
 	g.db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
+	
+#change password
+@app.route('/changepswd')
+def changepswd():
+	return render_template('changepassword.html')
+	
+	
+@app.route('/changepassword', methods=['POST'])
+def changepassword():	
+	user = g.db.execute('select username,password,salt from users where username == ?', [session['username']])
+	user = [dict(username=row[0],password=row[1],salt=row[2]) for row in user.fetchall()]
+
+	if hash(request.form['oldpassword']+user[0]['salt']) != user[0]['password']:
+		return render_template('changepassword.html', wrong = True)
+	if request.form['newpassword'] != request.form['confirmpassword']:
+		return render_template('changepassword.html', confirm = False)
+	password = request.form['newpassword']
+	g.db.execute('update users set password=? where username==?',
+	[hash(password+user[0]['salt']), session['username']])
+	
+	g.db.commit()
+	flash('New entry was successfully posted')
+	return redirect(url_for('myprofile'))
+	
+#add email
+@app.route('/email')
+def addemail():
+	return render_template('email.html')
+@app.route('/addemail', methods=['POST'])
+def addeml():
+	user = g.db.execute('select username,password,salt from users where username == ?', [session['username']])
+	user = [dict(username=row[0],password=row[1],salt=row[2]) for row in user.fetchall()]
+	if hash(request.form['password']+user[0]['salt']) != user[0]['password']:
+		return render_template('email.html', wrong = True)
+	email = request.form['email']
+	if validate_email(email, verify=True) == True:
+		
+		g.db.execute('update users set email=? where username==?',[email, session['username']])
+		g.db.commit()
+		return redirect(url_for('myprofile'))
+	else:
+		return render_template('email.html', invalid = True)
+
+	
+	
 
 #profile
 @app.route('/myprofile')
@@ -186,9 +235,25 @@ def login_info():
 		session['username'] = user[0]['username']
 	else:
 		session['logged_in'] = False
+		return render_template('login.html', password=False)
 	
 	return redirect(url_for('show_entries'))	
+
+#forgot my password!
+@app.route('/forgotpassword')
+def forgotpassword():
+	return render_template('forgotpassword.html')
 	
+@app.route('/sendeml', methods=['POST'])
+def sendeml():
+	user = g.db.execute('select email from users where email == ?', [request.form['email']])
+	user = [dict(email=row[0]) for row in user.fetchall()]
+	if user==[]:
+		return render_template('forgotpassword', noemail = True)
+	if request.form['email'] != users[0]['email']:
+		return render_template('forgotpassword', wrongemail = True)
+# 	else:
+		
 #going to specific entry	
 @app.route('/entry/<id>')
 def show_entry(id):
