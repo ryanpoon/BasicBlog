@@ -3,6 +3,9 @@
 {%if wrong==True%}
 	<p id="error">ERROR: Your password wasn't correct</p>
 {%endif%}
+{%if unique==False%}
+	<p id="error">ERROR: The email you submitted was not unique</p>
+{%endif%}
 {%if invalid==True%}
 	<p id="error">ERROR: The email you submitted was invalid</p>
 {%endif%}

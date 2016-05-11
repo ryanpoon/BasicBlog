@@ -1,4 +1,4 @@
-import sqlite3 , datetime, random
+import sqlite3 , datetime, random, smtplib, string
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
 from validate_email import validate_email
 from contextlib import closing
@@ -12,9 +12,10 @@ UPLOAD_FOLDER = './img'
 DEBUG = True
 SECRET_KEY = 'dev key'
 
+
 with open('supersecretemail.txt', 'rb') as f:
-	USERNAME = f.readline()
-	PASSWORD = f.readline()
+	USERNAME = f.readline().strip()
+	PASSWORD = f.readline().strip()
 
 print USERNAME
 print PASSWORD
@@ -113,7 +114,6 @@ def changepassword():
 	[hash(password+user[0]['salt']), session['username']])
 	
 	g.db.commit()
-	flash('New entry was successfully posted')
 	return redirect(url_for('myprofile'))
 	
 #add email
@@ -127,6 +127,11 @@ def addeml():
 	if hash(request.form['password']+user[0]['salt']) != user[0]['password']:
 		return render_template('email.html', wrong = True)
 	email = request.form['email']
+	
+	user = g.db.execute('select email from users where email == ?', [email])
+	user = [1 for row in user.fetchall()]
+	if user != []:
+		return render_template('email.html', unique = False)
 	if validate_email(email, verify=True) == True:
 		
 		g.db.execute('update users set email=? where username==?',[email, session['username']])
@@ -246,13 +251,50 @@ def forgotpassword():
 	
 @app.route('/sendeml', methods=['POST'])
 def sendeml():
-	user = g.db.execute('select email from users where email == ?', [request.form['email']])
-	user = [dict(email=row[0]) for row in user.fetchall()]
+	user = g.db.execute('select email, username from users where email == ?', [request.form['email']])
+	user = [dict(email=row[0], username=row[1]) for row in user.fetchall()]
 	if user==[]:
-		return render_template('forgotpassword', noemail = True)
-	if request.form['email'] != users[0]['email']:
-		return render_template('forgotpassword', wrongemail = True)
-# 	else:
+		return render_template('forgotpassword.html', noemail = True)
+	else:
+		randomcode = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(10))
+		g.db.execute('update users set randomcode=? where username=?', [randomcode, user[0]['username']])
+		g.db.commit()
+		print randomcode	
+		smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+		smtpObj.ehlo()
+		print 'echo'
+		smtpObj.starttls()
+		smtpObj.login(USERNAME, PASSWORD)
+		print 'login'
+		smtpObj.sendmail(USERNAME, user[0]['email'],
+        'Subject: Please Verify Your Password Change\nDear '+user[0]['username']+',\nYour code to change your password is '+ randomcode)
+		print 'sent'
+		smtpObj.quit()
+		return render_template('forgotpassword2.html', email=user[0]['email'])
+		
+		
+@app.route('/submitcode', methods=['POST'])
+def submitcode():
+	user = g.db.execute('select email, username, randomcode from users where email == ?', [request.form['email']])
+	user = [dict(email=row[0], username=row[1], randomcode=row[2]) for row in user.fetchall()]
+	if request.form['code'] != user[0]['randomcode']:
+		return render_template('forgotpassword2.html', wrong = True,  email=user[0]['email'])
+	else:
+		return render_template('forgotpassword3.html', email=user[0]['email'])
+	return 
+@app.route('/changepasswordforgot', methods=['POST'])	
+def changepasswordforgot():
+	user = g.db.execute('select username,password,salt from users where email == ?', [request.form['email']])
+	user = [dict(username=row[0],password=row[1],salt=row[2]) for row in user.fetchall()]
+
+	if request.form['newpassword'] != request.form['confirmpassword']:
+		return render_template('forgotpassword3.html', confirm = False, email=request.form['email'])
+	password = request.form['newpassword']
+	g.db.execute('update users set password=? where email==?',
+	[hash(password+user[0]['salt']), request.form['email']])
+	
+	g.db.commit()
+	return redirect(url_for('myprofile'))
 		
 #going to specific entry	
 @app.route('/entry/<id>')

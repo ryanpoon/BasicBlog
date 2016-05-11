@@ -16,5 +16,6 @@ create table users (
 	date text not null,
 	last_active text, 
 	description text,
-	email text
+	email text,
+	randomcode text,
 );
