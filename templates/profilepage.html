@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block body %}
+<div id="profile">
+	<div id="profile-tabs">
+		<button class='profile-buttons'>Profile</button>
+		<button class='profile-buttons'>Feed</button>
+		<button class='profile-buttons'>Followers</button>
+		<button class='profile-buttons'>Following</button>
+	</div>
+	<div id="profile-content">
+		<p id='username'>{{user.username}}</p>
+		{%if user.profilepic_name != ''%}
+			<img src="/uploads/{{user.profilepic_name}}" onclick="revealprofpic()" class=cursor height=100px width=auto>
+		{%else%}
+			<img src ="{{url_for('static', filename='default.jpeg')}}" onclick="revealprofpic()" class=cursor>
+		{%endif%}
+		<a href='/changepswd'><button class='prof-change' id='changepswd'>Change Password</button></a>
+		<a href='/email'><button class='prof-change' id='addeml'>Add Email</button></a>
+		
+		
+		<form action="{{url_for('change_profpic')}}" method=post class=changeprofpic enctype="multipart/form-data">
+			<dl>
+				<dd><input type = hidden name = id value={{user.id}}>
+				<dt>Change Profile Picture:
+				<dd><input type=file name=file>
+				<dd><input type=submit value=Upload>
+			</dl>
+		</form>
+	
+	
+		<p id=profiledesc onclick='changeprofdesc()' style="white-space: pre-line">
+		{{user.description}} 
+		</p>
+		<form action="{{url_for('changeprofdesc')}}" method=post class=changeprofdesc enctype="multipart/form-data">
+			<dl>
+				<input type = hidden name = id value={{user.id}}>
+				<textarea name=text cols=82 style="white-space: pre-line" id=desctext>{{user.description}}</textarea>
+				<br>
+				<input type=submit value=Update>
+			</dl>
+		</form>
+	
+		<div>
+		Profile Created {{user.date}}
+		<br>
+		Last Active {{user.last_active}}
+		</div>
+	</div>
+</div>
+
+{% endblock %}
