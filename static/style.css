@@ -1,5 +1,5 @@
 body {
-	background-color: #A4A4DB;
+	background-color: 'white';
 	font-family:"Trebuchet MS", Helvetica, sans-serif;	
 
 }
@@ -21,6 +21,71 @@ body {
 	margin-right: 10px;
 	cursor:pointer;
 }
+.nodecor{
+	text-decoration: none;
+}
+#username{
+	font-family:"Kozuka Gothic Pro", sans-serif;
+	font-size: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.changeprofpic {
+	display:none;
+}
+#desctext {
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 16px;
+	
+}
+.prof-change{
+	display: inline-block;
+	float:right;
+	border: none;
+	padding: 5px;
+	font-family:"Trebuchet MS", Helvetica, sans-serif;;
+}
+#changepswd{
+	margin-left: 20px; 
+	margin-right: 20px;
+}
+.changeprofdesc {
+	display:none;
+	
+}
+#profiledesc{
+	background-color: white;
+	margin-right: 10%;
+	padding: 5px;
+	cursor: pointer;
+}
+.cursor{
+	cursor:pointer;
+}
+#profile{
+	width: 60%;
+	background-color: #E04343;
+	padding-left: 10px;
+	padding-bottom: 10px;
+}
+.profile-buttons{
+	background-color: #FFC14F;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0px 2px;
+    cursor: pointer;
+}
+#profile-tabs{
+	float:top;
+	background-color: #9CEDFF; 
+	width: 56%;
+	padding-left: 5px;
+}
 .delete{
 	border: none;
 	color: grey;
@@ -33,7 +98,9 @@ body {
 	float: right;
 	margin-right:30px;
 }
-
+#error{
+	color:red;
+}
 .delete:hover{
 	color:red;
 }
@@ -115,6 +182,13 @@ display:block
     top: 70%;
     left: 50%;
     padding: 20px;
+}
+#changepswd{
+	cursor: pointer;
+}
+
+#addeml{
+	cursor: pointer;
 }
 
 .title{
