@@ -17,33 +17,4 @@
 	<p style="white-space: pre-line"> {{entry.text}}
 	Last Modified {{entry.date}} by {{entry.creator}}
 </div>
-<h2 class="page_header">Comments</h2>
-<div id = commentsection>
-	{%if notloggedin == True%}
-		<p id = error>ERROR: You are not logged in</p>
-	{%endif%}
-	<form action="{{url_for('add_comment')}}" method=post class=add-entry enctype="multipart/form-data">
-		<dl>
-			<input type=hidden value = '{{entry.id}}' name = entry>
-			<dt> Write a Comment
-			<textarea name=text rows=2 cols=80 id=comment></textarea>
-			<br>
-			<input type=submit value=Post>
-		</dl>
-	</form>
-	<div class="comments">
-		{% for comment in comments %}
-			<div>
-			
-				<img src='/uploads/{{comment.profilepic_name}}' height=50xpx width=auto>
-				
-				<div style=inline><a href=profile/{{comment.creator}}>{{comment.creator}}</a> <span class=date>on {{comment.date}}</span><br>
-				{{comment.text}}<br>
-				
-				<button>Reply</button>
-				</div>
-			</div>
-		{% endfor %}
-	</div>
-</div>
 {% endblock %}

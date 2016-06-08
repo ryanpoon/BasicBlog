@@ -17,14 +17,5 @@ create table users (
 	last_active text, 
 	description text,
 	email text,
-	randomcode text
+	randomcode text,
 );
-create table comments (
-	id integer primary key autoincrement,
-	entry integer not null,
-	location integer,
-	text text not null,
-	creator text not null,
-	date text not null
-);
-
