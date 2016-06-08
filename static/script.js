@@ -23,3 +23,10 @@ function changeprofdesc(){
     y.style.display = "none";
      
 }
+
+function reply(id){
+	var y = document.getElementById('button'+id); //button
+	var x = document.getElementById('form'+id); //form
+    x.style.display = "block";
+    y.style.display = "none";
+}

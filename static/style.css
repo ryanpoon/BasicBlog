@@ -149,6 +149,10 @@ body {
 	    display: inline-block;
 }
 
+.children{
+	margin-left: 30px;
+}
+
 #commentsection{
 	border-style: solid;
 	border-color: #4742D6;

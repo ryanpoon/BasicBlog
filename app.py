@@ -202,8 +202,10 @@ def add_comment():
 			im = Image.open('img/'+entries[0]['img_name'])
 			entries[0]['img_size'] = im.size
 		return render_template('entry.html', notloggedin = True, entry=entries[0])
+		
+		
 	g.db.execute('insert into comments (location,text,entry,date, creator) values (?,?,?,?,?)',
-	[-1,request.form['text'], request.form['entry'], datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
+	[request.form["location"],request.form['text'], request.form['entry'], datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 	g.db.execute('update users set last_active = ? where username=?', [datetime.datetime.today().strftime('%m/%d/%Y at %I:%M %p'), session['username']])
 	g.db.commit()
 	flash('New entry was successfully posted')
@@ -327,9 +329,21 @@ def show_entry(id):
 		
 		
 	cur = g.db.execute('select comments.id, entry, location, text, creator, comments.date,profilepic_name from comments join users on users.username == comments.creator where entry ==  ?', [id])
-	comments = [dict(id=row[0],entry=row[1],location=row[2], text=row[3], creator=row[4],date=row[5], profilepic_name=row[6]) for row in cur.fetchall()]
+	comments = [dict(id=row[0],entry=row[1],location=row[2], text=row[3], creator=row[4],date=row[5], profilepic_name=row[6], children=[]) for row in cur.fetchall()]
 
-	return render_template('entry.html', entry=entries[0], comments=comments)
+	top_comments = []
+	for comment in comments:
+		if comment['location'] == -1:
+			top_comments.append(comment)
+		else:
+			for parent in top_comments:
+				if parent['id']== comment['location']:
+					parent['children'].append(comment)
+					break
+					
+	for comment in top_comments:
+		print comment
+	return render_template('entry.html', entry=entries[0], comments=top_comments)
 	
 #editing a specific entry
 @app.route('/edit/<id>')
