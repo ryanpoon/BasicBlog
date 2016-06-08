@@ -13,9 +13,9 @@ DEBUG = True
 SECRET_KEY = 'dev key'
 
 
-# with open('supersecretemail.txt', 'rb') as f:
-USERNAME = os.environ["EMAIL_USERNAME"]
-PASSWORD = os.environ["EMAIL_PASSWORD"]
+with open('supersecretemail.txt', 'rb') as f:
+	USERNAME = f.readline().strip()
+	PASSWORD = f.readline().strip()
 
 print USERNAME
 print PASSWORD
