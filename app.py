@@ -92,6 +92,7 @@ def create_account():
 	
 	g.db.commit()
 	flash('New entry was successfully posted')
+	session['logged_in'] = True
 	return redirect(url_for('show_entries'))
 	
 #change password
@@ -148,7 +149,7 @@ def addeml():
 def myprofile():
 	user = g.db.execute('select username,profilepic_name,date,last_active,id,description from users where username == ?', [session['username']])
 	user = [dict(username=row[0],profilepic_name=row[1],date=row[2],last_active=row[3],id=row[4],description=row[5]) for row in user.fetchall()]
-	if session.get('logged_in') or session['logged_in'] == False:
+	if not session.get('logged_in') or session['logged_in'] == False:
 		return redirect(url_for('home'))	
 	if user[0]['description'] == None:
 		user[0]['description'] = 'You haven\'t written a description yet! Go ahead and click here to start writing!'
