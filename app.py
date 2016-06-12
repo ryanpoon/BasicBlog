@@ -12,10 +12,9 @@ UPLOAD_FOLDER = './img'
 DEBUG = True
 SECRET_KEY = 'dev key'
 
+USERNAME = os.environ['EMAIL_USERNAME']
+PASSWORD = os.environ['EMAIL_PASSWORD']
 
-with open('supersecretemail.txt', 'rb') as f:
-	USERNAME = f.readline().strip()
-	PASSWORD = f.readline().strip()
 
 print USERNAME
 print PASSWORD
@@ -93,6 +92,7 @@ def create_account():
 	g.db.commit()
 	flash('New entry was successfully posted')
 	session['logged_in'] = True
+	session['username'] = request.form['username']
 	return redirect(url_for('show_entries'))
 	
 #change password
